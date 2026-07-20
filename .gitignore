@@ -1,0 +1,12 @@
+# probe scratch — the harness plants canaries in a temp dir and cleans up,
+# but a killed run can leave these behind
+probes/.scratch/
+probes/*.out
+
+# local Claude Code state
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
