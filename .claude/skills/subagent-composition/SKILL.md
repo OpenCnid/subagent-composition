@@ -5,11 +5,11 @@ description: Compose a Claude Code sub-agent on the fly — persona, inherited-c
 
 # Sub-Agent Composition
 
-> A sub-agent wakes as a stranger holding one page. Everything it needs is on that page or it does not exist.
+## Ground
 
-## Provenance and ground
+A spawned sub-agent starts cold. Everything it needs is in the prompt you send or it is absent — the inheritance ledger below is the authoritative account of what does and does not cross that boundary.
 
-Mechanics verified July 19, 2026 against the Claude Code docs (`sub-agents`, `agent-sdk/subagents`, `worktrees`, `settings`, `model-config`, `plugins-reference`), then probed live on CLI 2.1.214 — five throwaway agents differing by one field, canary tokens planted in a skill body and a `CLAUDE.md`, with a no-`skills` control. The control earned its place twice: it distinguished a hot-reload failure from bad YAML, and a positive control distinguished a real negative from a blind probe. Composition discipline is the Lexideck toolkit applied to the agent boundary: the frames below are hypershots, the block order is attention management, and the return contract is decoherence prevention at the one place where ambiguity is unrecoverable.
+The mechanics here were verified against the Claude Code documentation and then probed live on CLI 2.1.214, with controls that separated a hot-reload failure from bad YAML and a real negative from a blind probe. What was checked, what the controls bought, and what remains unmeasured: [`references/provenance.md`](references/provenance.md).
 
 ## The spawn gate — run this first
 
