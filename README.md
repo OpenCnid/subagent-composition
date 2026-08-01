@@ -58,6 +58,28 @@ what a [hypershot](#-standing-on-the-shoulders-of-giants) is for, and it is the
 one slot where a weak prior is unrecoverable, because there is no second
 message in which to correct it.
 
+## The disproving arm
+
+Siblings primed to find a problem find it, and each one honestly. Their returns
+then agree — and **agreement among arms that share a prior is not corroboration.
+It is the prior, restated N times.** Nothing in a fan-out can catch that from
+inside, because no sibling is looking.
+
+So when a fan-out's finding would change *what kind of work follows* — rebuild
+versus repair, absent versus unreachable, defect versus default — one additional
+arm is spawned whose only job is to disprove the reading the others are
+converging on, and whose ground block says so in those words.
+
+The trigger is narrow on purpose. Routine sweeps do not get one; this is a
+single agent on scope-changing findings, not a standing skeptic on every
+dispatch.
+
+> **Provenance.** Three sweeps primed on "the build drifted toward retrieval"
+> found drift, correctly and everywhere they looked. A fourth, primed to bound
+> the claim, found the capability the other three had reported missing — built,
+> and merely unreachable. Without it the session would have carried a rebuild
+> estimate for work already done.
+
 ## 🛠️ Using it
 
 Clone and copy the skill into Claude Code:
@@ -93,6 +115,7 @@ the short version:
 | `tools:` is comma-separated (`Read, Grep`) and **replaces** inheritance rather than trimming it | ✅ verified |
 | `--agent {name}` **silently ignores `skills:`** — session mode and spawn are different paths | ⚠️ trap |
 | Agent registration **lags the filesystem in both directions** | ⚠️ trap |
+| The ephemeral `Agent` call **cannot express `maxTurns`, `effort`, `tools`, or `skills`** — those four need a definition file | ⚠️ observed, not harnessed |
 
 That fourth row is the expensive one. It makes a perfectly valid agent look
 completely broken, and it is why this repo exists as documentation and not just

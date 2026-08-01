@@ -153,9 +153,48 @@ passing the prompt '{...}'. Then output its final message verbatim and nothing e
 
 ---
 
-## 7. Not probed
+## 7. ⚠️ The ephemeral `Agent` call is a smaller surface than the file
+
+**Observed in the field, not by this harness.** `run-probes.sh` exercises
+filesystem-defined agents; it does not exercise the `Agent` tool call's own
+schema. This row is recorded because it changes when you must write a definition
+instead of passing a prompt, and it is marked accordingly.
+
+On CLI **2.1.214** the call's schema accepts `description`, `prompt`,
+`subagent_type`, `model`, `run_in_background`, and `isolation`, and refuses
+anything else — `additionalProperties` is `false`, so an unexpected key is a
+rejected call rather than an ignored field.
+
+| Control | Ephemeral `Agent` call | `.claude/agents/{name}.md` |
+|---|---|---|
+| `model` | yes | yes |
+| `isolation: worktree` | yes | yes |
+| background vs. synchronous | yes — `run_in_background` | caller's choice, not a field |
+| `maxTurns` | **no** | yes |
+| `effort` | **no** | yes |
+| `tools` / `disallowedTools` | **no** — fixed by `subagent_type` | yes |
+| `skills` preload | **no** | yes |
+
+**Consequence.** A turn ceiling, a tool budget, a reasoning budget, and
+preloaded skill content are all four unreachable from a bare `Agent` call.
+Needing any of them is the durable-specialization trigger: write the definition,
+then reach it through `subagent_type`. Reading `maxTurns` as an ephemeral
+parameter costs a rejected call to discover.
+
+**How this was established, stated plainly:** by calls that were refused, in
+ordinary use, rather than by a controlled arm. It is reproducible by anyone who
+passes `maxTurns` to an `Agent` call and reads the error. Adding an arm to
+`run-probes.sh` that does exactly that is the obvious next probe and has not been
+written.
+
+---
+
+## 8. Not probed
 
 Stated for honesty; do not treat these as verified.
+
+- The ephemeral-call schema in §7 — reproducible, but not covered by the
+  checked-in harness.
 
 - `disallowedTools` ordering relative to `tools`.
 - `isolation: worktree` cleanup semantics and the `cleanupPeriodDays` sweep.
