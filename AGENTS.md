@@ -6,10 +6,20 @@
 ## What this repo is
 
 One Claude Code skill —
-[`.claude/skills/subagent-composition/SKILL.md`](.claude/skills/subagent-composition/SKILL.md) —
+[`.claude/skills/subagent-composition/`](.claude/skills/subagent-composition/) —
 that composes sub-agents on demand, plus the probe evidence behind its factual
 claims ([docs/FINDINGS.md](docs/FINDINGS.md),
 [docs/PROBE-METHODOLOGY.md](docs/PROBE-METHODOLOGY.md), [probes/](probes/)).
+
+The skill is three files, not one: `SKILL.md`, `.claude-plugin/plugin.json`, and
+`hooks/hooks.json`. The latter two make the directory a skills-directory plugin
+whose `UserPromptExpansion` hook asks for the `prompt-engineering` and
+`hypershot-protocol` companions when the skill is invoked by its slash name.
+Those two companions are referenced by name and **not vendored here**. The hook
+is the only configuration in this repo that the harness executes; it takes
+effect on the next session, and it does nothing while the skill sits in a
+project-local `.claude/skills/`, which is where it sits in this repo. Both of
+those behaviours were probed — see [docs/FINDINGS.md](docs/FINDINGS.md).
 
 There are **no installable agents here**. `probes/agents/` holds five
 diagnostics that exist to be run and deleted; they are deliberately *not* in
@@ -45,10 +55,21 @@ writes the one you actually need.
   the result matrix on the installed version. If a result has moved, update the
   finding *and* its version pin in the same commit — a finding without a pin is
   a rumor.
-- **Keep the skill and its copy in sync.** `.claude/skills/subagent-composition/SKILL.md`
-  is the canonical copy. If you edit the installed copy at
-  `~/.claude/skills/subagent-composition/SKILL.md` instead, port it back here in
-  the same session or the two will silently diverge.
+- **Keep the skill and its installed copy in sync.**
+  `.claude/skills/subagent-composition/` is the canonical tree, and the
+  installed artifact is that whole directory — `SKILL.md`,
+  `.claude-plugin/plugin.json`, and `hooks/hooks.json`. Any of the three can
+  drift. If you edit a file under `~/.claude/skills/subagent-composition/`
+  instead of its canonical counterpart, port it back here in the same session or
+  the two trees will silently diverge.
+- **A hook here `echo`s a static string and nothing else.** `hooks/hooks.json`
+  is the only file in this repo that the harness executes. Its `command` is a
+  single `echo` of a literal JSON payload: no network access, no reading the
+  user's files or environment, no writes, no interpreter, and no command
+  assembled from a variable. If a reader cannot confirm what it does from the
+  one line, it does not belong there. Note also that the hook cannot fire from
+  this repo's own `.claude/skills/` — only a user-level skills root loads it — so
+  an edit to it is untested until it is installed and a new session starts.
 - **Frames stay contamination-free.** Every code block in the skill is a
   hypershot: free variables, no concrete nouns, no worked example content. A
   real filename in a frame is a bug, not an illustration.

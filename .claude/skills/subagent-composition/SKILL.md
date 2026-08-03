@@ -1,9 +1,19 @@
 ---
 name: subagent-composition
-description: Compose a Claude Code sub-agent on the fly — persona, inherited-context transfer, tool budget, and return contract — as either an ephemeral Agent-tool call or a persistent .claude/agents/*.md definition. Use whenever the user asks to spawn, delegate to, build, design, or fix a sub-agent or agent file; mentions agent frontmatter, tool allowlists, parallel agents, fan-out, or worktree isolation; or when a sub-agent came back with thin, wrong, or off-scope output and the prompt is the suspect. Also use when deciding whether to delegate at all. Pairs with the prompt-engineering and hypershot-protocol skills, which must be invoked first in any session that authors agent prompt bytes (house Guardrail 15).
+description: Compose a Claude Code sub-agent on the fly — persona, inherited-context transfer, tool budget, and return contract — as either an ephemeral Agent-tool call or a persistent .claude/agents/*.md definition. Use whenever the user asks to spawn, delegate to, build, design, or fix a sub-agent or agent file; mentions agent frontmatter, tool allowlists, parallel agents, fan-out, or worktree isolation; or when a sub-agent came back with thin, wrong, or off-scope output and the prompt is the suspect. Also use when deciding whether to delegate at all. Pairs with the prompt-engineering and hypershot-protocol skills, which load alongside it whenever agent prompt bytes are being authored.
 ---
 
 # Sub-Agent Composition
+
+## Companions
+
+Composing an agent prompt is authoring prompt bytes, so `prompt-engineering` and
+`hypershot-protocol` load with this skill. On the `/subagent-composition` path a
+bundled hook injects that instruction; on every other path it is this paragraph —
+**invoke both via the Skill tool before drafting**, and if either is absent, say
+so once and continue without it. Preloading this skill into an agent is the third
+path and the hook cannot reach it, because `skills:` fires no `Skill` call: list
+all three names there instead.
 
 ## Ground
 
@@ -29,10 +39,12 @@ The whole craft reduces to this table. Compose against it, not against intuition
 | Crosses | Does **not** cross |
 |---|---|
 | The agent's own prompt (file body, or the `prompt` param) | Your conversation history and every tool result in it |
-| Project `CLAUDE.md` (subject to `settingSources`) | Your system prompt and harness instructions |
+| The **whole `CLAUDE.md` hierarchy** — user, project, `.claude/rules/`, `CLAUDE.local.md`, managed policy | Your system prompt and harness instructions |
 | Tool *definitions* for its allowlist | **Auto-memory / `MEMORY.md`** — including recalled memories |
 | Session extended-thinking config | Skill content you have loaded (unless named in `skills:`) |
 | Names of sibling agents (for `SendMessage`) | Your reasoning, decisions, rejected paths, and the user's stated intent |
+
+**Explore and Plan are the exception, and it is per-agent, not per-setting.** They alone skip `CLAUDE.md` and git status, and no frontmatter field changes that. Every other agent — built-in or custom — receives the full hierarchy.
 
 **Return channel: the final message only.** Intermediate work is discarded unread. A sub-agent that does perfect work and signs off with "Done — see above" has produced nothing.
 
@@ -183,7 +195,7 @@ A turn ceiling, a tool budget, a reasoning budget, and preloaded skill content a
 
 - **Agent registration lags the filesystem, in both directions.** Skills register the instant they are written; agents do not. A newly authored agent fails with *"Agent type not found"* while its definition is perfectly valid — and a deleted agent can keep appearing in the available list well after removal. Never read that error as a broken definition. The reliable test path is a fresh process: `claude --allowedTools "Agent" -p "Spawn the {name} subagent …"`.
 - **`--agent {name}` silently ignores `skills:`.** Session-agent mode and subagent spawn are different paths; only the spawn path preloads. Validate agent behavior through an actual spawn, never through `--agent`, or a working definition reads as broken.
-- **`tools:` is enforced, not advisory.** A probe declaring `tools: WebSearch` reported exactly that one tool — the allowlist replaces inheritance rather than trimming it.
+- **`tools:` is enforced, not advisory.** A probe declaring `tools: WebSearch` reported exactly that one tool — the allowlist replaces inheritance rather than trimming it. It governs *tool calls*, though: a `` !`command` `` in a preloaded skill's body is preprocessing, not a tool call, and runs at startup regardless of the allowlist.
 
 ## The disproving arm — required when a finding would change scope
 
@@ -231,7 +243,7 @@ Compose one **shared ground block** and reuse it verbatim across siblings; drift
 ## Failure modes
 
 1. **Assumed inheritance** — "the file we discussed," "continue where we left off," "as we established." There is no *we*. This is the dominant failure and it reads as fluent prose right up until the agent returns something unrelated.
-2. **Memory leakage assumed** — composing as though `MEMORY.md`, user preferences, or house conventions crossed. They did not. Restate the ones that bind this task.
+2. **Memory leakage assumed** — composing as though `MEMORY.md` and its recalled memories crossed. They do not; restate the ones that bind this task. Do not over-correct, though: the `CLAUDE.md` hierarchy *does* cross, so re-transferring house conventions that already arrive is tokens spent on a copy.
 3. **The buried deliverable** — findings live in tool calls; the final message summarizes. Everything not in that last message is gone.
 4. **Instruction where a frame belongs** — `## Return` written as a paragraph describing the output. Prose about a format is a weaker prior than the format, and it is the level-3 slot where weak priors cost the most, because there is no second message to correct in.
 5. **Persona as decoration** — honorifics and superlatives that change no behavior, paying tokens for vibes.

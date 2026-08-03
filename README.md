@@ -31,10 +31,13 @@
 | Crosses the boundary | Does **not** cross |
 |---|---|
 | The agent's own prompt (file body, or the `prompt` param) | Your conversation history and every tool result in it |
-| Project `CLAUDE.md` | Your system prompt and harness instructions |
+| The whole `CLAUDE.md` hierarchy — user, project, rules, managed policy | Your system prompt and harness instructions |
 | Tool *definitions* for its allowlist | **Auto-memory** — including anything you just "remembered" |
 | Skills named in `skills:` (full body) | Skills *you* have loaded |
 | Names of sibling agents | Your reasoning, dead ends, and the user's actual intent |
+
+Explore and Plan are the one exception, and it is per-agent rather than
+per-setting: they alone skip `CLAUDE.md`, and no frontmatter field changes that.
 
 Two consequences do all the work. Anything unstated is absent, so the prompt is
 a **transfer manifest**, not a reminder. And the deliverable is one message, so
@@ -82,12 +85,22 @@ dispatch.
 
 ## 🛠️ Using it
 
-Clone and copy the skill into Claude Code:
+Clone and copy the skill into Claude Code — still one directory, still one
+command:
 
 ```bash
 git clone https://github.com/OpenCnid/subagent-composition.git
 cp -r subagent-composition/.claude/skills/subagent-composition ~/.claude/skills/
 ```
+
+Two caveats, both of which fail quietly if you miss them:
+
+- **The destination really is `~/.claude/skills/`.** The skill body works from
+  anywhere, but the bundled hook only loads from a user-level skills root. Copy
+  the same directory into a project's `.claude/skills/` and you get a skill whose
+  hooks fire zero times and say so zero times.
+- **It arrives next session.** Nothing to install, nothing to reload — but a
+  session that was already open when you copied will not see it.
 
 Then say *"spawn an agent that…"*, *"build me a sub-agent for…"*, or
 *"this agent came back with garbage"* and it triggers on its own. It also fires
@@ -95,12 +108,19 @@ on the question most worth asking first — **whether to delegate at all** — w
 it answers "no" more often than you might like.
 
 > [!NOTE]
-> The skill references two sibling skills by name (`prompt-engineering`,
-> `hypershot-protocol`) and links `judge-composition` with a `[[wikilink]]`.
-> Those are not in this repo. The skill works fine without them; the links are
-> signposts, and the lineage is credited below. **"House Guardrail 15"** in its
-> description is an OpenCnid convention: any session that authors prompt bytes
-> loads the prompt-engineering and hypershot skills *first*.
+> **The companions are named here, not shipped here.** `prompt-engineering` and
+> `hypershot-protocol` live elsewhere. Composing an agent prompt *is* authoring
+> prompt bytes, and those two are what OpenCnid loads first when that happens —
+> so the skill stopped merely recommending them. A bundled `UserPromptExpansion`
+> hook fires on `/subagent-composition` and injects one line telling the model to
+> load both with the `Skill` tool. A directive rather than the bodies, because
+> hook output is capped at 10,000 characters and `hypershot-protocol` is 10,312
+> on its own. If a companion is absent the directive says to note it once and
+> continue, so **the skill still works without them** — which is the entire
+> reason it asks the model to load them rather than depending on them.
+> Preloading through a sub-agent's `skills:` is the one path no hook can reach;
+> list all three names there yourself. (The skill also links `judge-composition`
+> with a `[[wikilink]]`. That one is a signpost, and nothing loads it.)
 
 ## What the probe found
 
@@ -116,6 +136,9 @@ the short version:
 | `--agent {name}` **silently ignores `skills:`** — session mode and spawn are different paths | ⚠️ trap |
 | Agent registration **lags the filesystem in both directions** | ⚠️ trap |
 | The ephemeral `Agent` call **cannot express `maxTurns`, `effort`, `tools`, or `skills`** — those four need a definition file | ⚠️ observed, not harnessed |
+| Dropping a plugin manifest into a skill directory **does not rename the skill** — slash form, `Skill` tool param, and hook payload all keep the bare name | ✅ verified |
+| That manifest is **inert under a project `.claude/skills/`** — zero hooks fired, zero warnings; only a user-level skills root loads it | ⚠️ trap |
+| Hook output over **10,000 characters is silently replaced by a file path** | ⚠️ trap |
 
 That fourth row is the expensive one. It makes a perfectly valid agent look
 completely broken, and it is why this repo exists as documentation and not just
@@ -182,7 +205,9 @@ say so out loud.
 
 ```
 .claude/skills/subagent-composition/    the skill — clone, copy, say "spawn an agent that…"
-docs/FINDINGS.md                        verified mechanics + the three traps
+  ↳ .claude-plugin/plugin.json          makes the directory load as a plugin (user-level roots only)
+  ↳ hooks/hooks.json                    the companion-skill directive, injected on invoke
+docs/FINDINGS.md                        verified mechanics + the traps
 docs/PROBE-METHODOLOGY.md               how to verify claims about agent internals
 probes/agents/                          five diagnostic agents, one field different each
 probes/run-probes.sh                    re-run the whole experiment on your version
