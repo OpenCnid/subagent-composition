@@ -12,8 +12,23 @@ Claude Code documentation: `sub-agents`, `agent-sdk/subagents`, `worktrees`,
 `settings`, `model-config`, and `plugins-reference`.
 
 **Live probe — CLI 2.1.214.** Five throwaway agents differing by exactly one
-field, with canary tokens planted in a skill body and in a `CLAUDE.md`, run
-against a no-`skills` control.
+field, with canary tokens planted in a skill body and in a project `CLAUDE.md`,
+run against a no-`skills` control.
+
+**Second documentation pass — August 2026,** for the bundled companion-loading
+plugin: `hooks`, `skills`, and `memory`, in addition to the pages above.
+
+**Static extraction — shipped `claude.exe`, 2.1.214.** A source class the July
+pass did not use: strings and configuration schemas read directly out of the
+installed binary. It is treated as lead-generating only. A string in a build
+shows what the build contains, not what the harness does with it, so what it
+surfaced was confirmed by probe or by documentation before it entered the body.
+
+**Hook activation probe — CLI 2.1.214, August 2026.** The plugin manifest and
+its `UserPromptExpansion` hook were run before and after installation, and from
+a project-local skills directory as well as a user-level one. The results are
+recorded in `docs/FINDINGS.md` and are not repeated here; keeping one copy is
+the point.
 
 ## What the control bought
 
@@ -50,3 +65,13 @@ output than one that is not. That is a separate question and this repository has
 no evidence for it. `probes/` holds the diagnostics; there is no `VALIDATION.md`
 here yet, and until there is, treat the composition guidance as engineering
 judgment and the mechanics as verified.
+
+One row of the ledger is also weaker than it reads. The body states that the
+**whole `CLAUDE.md` hierarchy** crosses the boundary — user, project,
+`.claude/rules/`, `CLAUDE.local.md`, managed policy. Only the project leg is
+measured here: the canary was planted in a project `CLAUDE.md` and came back.
+The user-level file, `.claude/rules/`, and managed policy are cited to the
+documentation and were never probed in this repo. The claim is not in doubt, but
+it is documentation, not measurement, and it is recorded that way. If one of the
+unprobed legs is load-bearing for what you are building, plant a canary in that
+leg rather than inheriting our confidence.
