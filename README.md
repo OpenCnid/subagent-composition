@@ -85,13 +85,34 @@ dispatch.
 
 ## 🛠️ Using it
 
-Clone and copy the skill into Claude Code — still one directory, still one
-command:
+Clone and copy the skill into Claude Code — still one directory, and the
+`mkdir` is not optional:
 
 ```bash
 git clone https://github.com/OpenCnid/subagent-composition.git
+mkdir -p ~/.claude/skills
 cp -r subagent-composition/.claude/skills/subagent-composition ~/.claude/skills/
 ```
+
+PowerShell:
+
+```powershell
+git clone https://github.com/OpenCnid/subagent-composition.git
+New-Item -ItemType Directory -Force -Path ~/.claude/skills
+Copy-Item -Recurse -Force subagent-composition/.claude/skills/subagent-composition ~/.claude/skills/
+```
+
+> [!WARNING]
+> **Do not drop the `mkdir` as noise — it is the whole install.** If `~/.claude`
+> exists but `~/.claude/skills/` does not, which is the state of anyone who has
+> never installed a skill, `cp` reads the trailing path as a *rename target*:
+> you get `~/.claude/skills/SKILL.md` and no skill directory at all. Exit code
+> 0, no output, no error, and a skill that never loads. `-Force` on `Copy-Item`
+> is load-bearing the same way — without it the second run, the upgrade path,
+> fails outright with "an item with the specified name already exists."
+
+If `CLAUDE_CONFIG_DIR` is set it replaces `~/.claude`, so install into
+`$CLAUDE_CONFIG_DIR/skills` instead.
 
 Two caveats, both of which fail quietly if you miss them:
 
