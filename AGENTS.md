@@ -6,7 +6,7 @@
 ## What this repo is
 
 One Claude Code skill —
-[`.claude/skills/subagent-composition/`](.claude/skills/subagent-composition/) —
+[`skills/subagent-composition/`](skills/subagent-composition/) —
 that composes sub-agents on demand, plus the probe evidence behind its factual
 claims ([docs/FINDINGS.md](docs/FINDINGS.md),
 [docs/PROBE-METHODOLOGY.md](docs/PROBE-METHODOLOGY.md), [probes/](probes/)).
@@ -17,8 +17,8 @@ whose `UserPromptExpansion` hook asks for the `prompt-engineering` and
 `hypershot-protocol` companions when the skill is invoked by its slash name.
 Those two companions are referenced by name and **not vendored here**. The hook
 is the only configuration in this repo that the harness executes; it takes
-effect on the next session, and it does nothing while the skill sits in a
-project-local `.claude/skills/`, which is where it sits in this repo. Both of
+effect on the next session, and it does nothing while the skill sits in this
+repo's own `skills/` tree rather than a user-level skills root. Both of
 those behaviours were probed — see [docs/FINDINGS.md](docs/FINDINGS.md).
 
 There are **no installable agents here**. `probes/agents/` holds five
@@ -56,7 +56,7 @@ writes the one you actually need.
   finding *and* its version pin in the same commit — a finding without a pin is
   a rumor.
 - **Keep the skill and its installed copy in sync.**
-  `.claude/skills/subagent-composition/` is the canonical tree, and the
+  `skills/subagent-composition/` is the canonical tree, and the
   installed artifact is that whole directory — `SKILL.md`,
   `.claude-plugin/plugin.json`, and `hooks/hooks.json`. Any of the three can
   drift. If you edit a file under `~/.claude/skills/subagent-composition/`
@@ -68,7 +68,7 @@ writes the one you actually need.
   user's files or environment, no writes, no interpreter, and no command
   assembled from a variable. If a reader cannot confirm what it does from the
   one line, it does not belong there. Note also that the hook cannot fire from
-  this repo's own `.claude/skills/` — only a user-level skills root loads it — so
+  this repo's own `skills/` tree — only a user-level skills root loads it — so
   an edit to it is untested until it is installed and a new session starts.
 - **Frames stay contamination-free.** Every code block in the skill is a
   hypershot: free variables, no concrete nouns, no worked example content. A

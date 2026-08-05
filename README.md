@@ -91,7 +91,7 @@ Clone and copy the skill into Claude Code — still one directory, and the
 ```bash
 git clone https://github.com/OpenCnid/subagent-composition.git
 mkdir -p ~/.claude/skills
-cp -r subagent-composition/.claude/skills/subagent-composition ~/.claude/skills/
+cp -r subagent-composition/skills/subagent-composition ~/.claude/skills/
 ```
 
 PowerShell:
@@ -99,7 +99,7 @@ PowerShell:
 ```powershell
 git clone https://github.com/OpenCnid/subagent-composition.git
 New-Item -ItemType Directory -Force -Path ~/.claude/skills
-Copy-Item -Recurse -Force subagent-composition/.claude/skills/subagent-composition ~/.claude/skills/
+Copy-Item -Recurse -Force subagent-composition/skills/subagent-composition ~/.claude/skills/
 ```
 
 > [!WARNING]
@@ -225,9 +225,10 @@ say so out loud.
 ## Layout
 
 ```
-.claude/skills/subagent-composition/    the skill — clone, copy, say "spawn an agent that…"
+skills/subagent-composition/            the skill — clone, copy, say "spawn an agent that…"
   ↳ .claude-plugin/plugin.json          makes the directory load as a plugin (user-level roots only)
   ↳ hooks/hooks.json                    the companion-skill directive, injected on invoke
+.claude-plugin/plugin.json              root manifest — makes this repo installable as a plugin
 docs/FINDINGS.md                        verified mechanics + the traps
 docs/PROBE-METHODOLOGY.md               how to verify claims about agent internals
 probes/agents/                          five diagnostic agents, one field different each
