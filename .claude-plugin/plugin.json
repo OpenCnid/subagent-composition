@@ -1,0 +1,12 @@
+{
+  "name": "subagent-composition",
+  "description": "Compose a Claude Code sub-agent on the fly — persona, inherited-context transfer, tool budget, and return contract — as either an ephemeral Agent-tool call or a persistent .claude/agents/*.md definition.",
+  "version": "0.1.0",
+  "author": {
+    "name": "OpenCnid Labs",
+    "url": "https://github.com/OpenCnid"
+  },
+  "homepage": "https://github.com/OpenCnid/subagent-composition",
+  "repository": "https://github.com/OpenCnid/subagent-composition",
+  "license": "CC-BY-4.0"
+}
