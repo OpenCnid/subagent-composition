@@ -195,7 +195,7 @@ A turn ceiling, a tool budget, a reasoning budget, and preloaded skill content a
 
 - **Agent registration lags the filesystem, in both directions.** Skills register the instant they are written; agents do not. A newly authored agent fails with *"Agent type not found"* while its definition is perfectly valid — and a deleted agent can keep appearing in the available list well after removal. Never read that error as a broken definition. The reliable test path is a fresh process: `claude --allowedTools "Agent" -p "Spawn the {name} subagent …"`.
 - **`--agent {name}` silently ignores `skills:`.** Session-agent mode and subagent spawn are different paths; only the spawn path preloads. Validate agent behavior through an actual spawn, never through `--agent`, or a working definition reads as broken.
-- **`tools:` is enforced, not advisory.** A probe declaring `tools: WebSearch` reported exactly that one tool — the allowlist replaces inheritance rather than trimming it. It governs *tool calls*, though: a `` !`command` `` in a preloaded skill's body is preprocessing, not a tool call, and runs at startup regardless of the allowlist.
+- **`tools:` is enforced, not advisory.** A probe declaring `tools: WebSearch` reported exactly that one tool — the allowlist replaces inheritance rather than trimming it. It governs *tool calls*, though: a bang-backtick command substitution in a preloaded skill's body is preprocessing, not a tool call, and runs at startup regardless of the allowlist.
 
 ## The disproving arm — required when a finding would change scope
 
